@@ -1,0 +1,15 @@
+return {
+  cmd = { 'basedpyright-langserver', '--stdio' },
+  filetypes = { 'python' },
+  root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', '.git' },
+  settings = {
+    basedpyright = {
+      analysis = {
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
+        -- 型チェックの厳しさ: 'off' | 'basic' | 'standard' | 'strict' | 'all'
+        typeCheckingMode = 'standard',
+      },
+    },
+  },
+}
