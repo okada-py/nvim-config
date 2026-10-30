@@ -125,6 +125,19 @@ create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold' }, {
   desc = 'Reload files changed on disk',
 })
 
+-- WSL: Esc等でインサート/コマンドラインを抜けたらIMEを半角英数に戻す
+-- パスは環境変数 ZENHAN で渡す(ユーザー名を含むのでリポジトリに書かない)。未設定なら PATH から探す
+local zenhan = vim.env.ZENHAN or vim.fn.exepath('zenhan.exe')
+if zenhan ~= '' and vim.uv.fs_stat(zenhan) then
+  create_autocmd({ 'InsertLeave', 'CmdlineLeave' }, {
+    pattern = '*',
+    callback = function()
+      vim.system({ zenhan, '0' }, { detach = true })
+    end,
+    desc = 'Turn off Windows IME when leaving insert/cmdline',
+  })
+end
+
 -- Clone 'mini.nvim' manually in a way that it gets managed by 'mini.deps'
 local path_package = vim.fn.stdpath('data') .. '/site/'
 local mini_path = path_package .. 'pack/deps/start/mini.nvim'
@@ -157,6 +170,10 @@ now(function()
       option_toggle_prefix = 'm',
     },
   })
+
+  -- mini.basics は wrap=false にするので、ここで折り返しを有効に戻す
+  -- (breakindent / linebreak は mini.basics 側で有効済み)
+  vim.opt.wrap = true
 end)
 
 later(function()
